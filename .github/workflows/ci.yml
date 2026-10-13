@@ -1,0 +1,20 @@
+name: Windows tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13'
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -B -m unittest discover -s tests -v
+      - run: python -B trainer_ui.py --self-test
+      - run: python -B trainer_ui.py --smoke --smoke-dir "${{ runner.temp }}/dd-ui-smoke"
