@@ -42,7 +42,9 @@ class AutoBackupRuntimeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        # Match the canonical paths used by checkpoint copy/scan callbacks,
+        # including when Windows TEMP uses an 8.3 short-name alias.
+        self.root = Path(self.temp.name).resolve(strict=True)
         self.remote = self.root / "steam-user" / "262060" / "remote"
         self.remote.mkdir(parents=True)
         self.profile0 = self._make_profile("profile_0", b"slot0", 0)

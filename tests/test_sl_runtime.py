@@ -116,7 +116,9 @@ class CheckpointRuntimeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        # Windows runners may expose TEMP through an 8.3 short-name alias.
+        # Match the canonical paths passed to our injected failure callbacks.
+        self.root = Path(self.temp.name).resolve(strict=True)
         self.remote = self.root / "steam-user" / "262060" / "remote"
         self.remote.mkdir(parents=True)
         self.checkpoint_root = self.root / "backups" / "checkpoints"
